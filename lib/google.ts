@@ -1,6 +1,8 @@
 import { generateS256CodeChallenge } from "@/lib/pkce";
+import { encodeBasicCredentials } from "@/lib/auth-utils";
 
-type CodeChallengeMethod = "S256";
+const authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
+const tokenEndpoint = "https://oauth2.googleapis.com/token";
 
 export class Google {
   public clientId: string;
@@ -15,17 +17,16 @@ export class Google {
   }
 
   public async createAuthorizationURLWithPKCE(
-    authorizationEndpoint: string,
     state: string,
     codeVerifier: string,
-    codeChallengeMethod: CodeChallengeMethod,
+    prompt: boolean,
     scopes: string[],
   ) {
     const url = new URL(authorizationEndpoint);
-    url.searchParams.set("response-type", "code");
-    url.searchParams.set("client_id", "this.clientId");
+    url.searchParams.set("response_type", "code");
+    url.searchParams.set("client_id", this.clientId);
     if (this.redirectURI !== null) {
-      url.searchParams.set("redirect_uri", "this.redirectURI");
+      url.searchParams.set("redirect_uri", this.redirectURI);
     }
     url.searchParams.set("state", state);
     const codeChallenge = await generateS256CodeChallenge(codeVerifier);
@@ -34,6 +35,40 @@ export class Google {
     if (scopes.length > 0) {
       url.searchParams.set("scope", scopes.join(" "));
     }
+    if (prompt) {
+      url.searchParams.set("prompt", "select_account");
+    }
     return url;
+  }
+
+  public async exchangeCodeForTokens(code: string, codeVerifier: string) {
+    const encodedCredentials = encodeBasicCredentials(
+      this.clientId,
+      this.clientPassword,
+    );
+
+    const response = await fetch(tokenEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+        Authorization: `Basic ${encodedCredentials}`,
+      },
+      body: new URLSearchParams({
+        code,
+        code_verifier: codeVerifier,
+        grant_type: "authorization_code",
+        client_id: this.clientId,
+        redirect_uri: this.redirectURI,
+      }),
+    });
+
+    if (response.status === 400) {
+      return null;
+    }
+
+    const data = await response.json();
+
+    return {};
   }
 }
