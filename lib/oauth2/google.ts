@@ -1,5 +1,5 @@
-import { generateS256CodeChallenge } from "@/lib/pkce";
-import { encodeBasicCredentials } from "@/lib/auth-utils";
+import { generateS256CodeChallenge } from "@/lib/oauth2/pkce";
+import { encodeBasicCredentials } from "@/lib/oauth2/utils";
 
 const authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
 const tokenEndpoint = "https://oauth2.googleapis.com/token";
