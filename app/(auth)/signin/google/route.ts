@@ -2,11 +2,12 @@ import { google } from "@/lib/oauth2/auth";
 import { generateState } from "@/lib/oauth2/utils";
 import { generateCodeVerifier } from "@/lib/oauth2/pkce";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
-export async function GET(): Promise<Response> {
+export async function GET() {
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
-  const url = google.createAuthorizationURLWithPKCE(state, codeVerifier, [
+  const url = await google.createAuthorizationURLWithPKCE(state, codeVerifier, [
     "openid",
     "profile",
   ]);
@@ -29,8 +30,5 @@ export async function GET(): Promise<Response> {
     sameSite: "lax",
   });
 
-  return new Response(null, {
-    status: 302,
-    headers: { Location: url.toString() },
-  });
+  return NextResponse.redirect(url.toString());
 }

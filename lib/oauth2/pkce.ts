@@ -11,6 +11,6 @@ export async function generateS256CodeChallenge(
 ): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(codeverifier);
-  const hash = await crypto.subtle.digest("SHA256", data);
+  const hash = await crypto.subtle.digest("SHA-256", data);
   return base64url.encode(new Uint8Array(hash));
 }
