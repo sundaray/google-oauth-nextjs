@@ -58,9 +58,6 @@ export class Google {
       }),
     });
 
-    console.log("Token endpoint response: ", response);
-    console.log("Token endpoint response status code: ", response.status);
-
     if (!response.ok) {
       const data = await response.json();
       return {
@@ -73,7 +70,6 @@ export class Google {
     }
 
     const data = await response.json();
-    console.log("Access Token response: ", data);
     return {
       data,
       error: null,

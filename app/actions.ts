@@ -16,6 +16,7 @@ export async function signInWithGoogle(next: string) {
 
   const url = await google.createAuthorizationURLWithPKCE(state, codeVerifier, [
     "openid",
+    "'email",
     "profile",
   ]);
 
@@ -30,6 +31,14 @@ export async function signInWithGoogle(next: string) {
   });
 
   cookieStore.set("google_code_verifier", codeVerifier, {
+    path: "/",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 10,
+    sameSite: "lax",
+  });
+
+  cookieStore.set("redirect", next, {
     path: "/",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
