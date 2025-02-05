@@ -29,16 +29,18 @@ export async function createSession(
   email: string,
   picture: string,
 ) {
-  const session = await encrypt({ userId, name, email, picture });
+  const user = await encrypt({ userId, name, email, picture });
 
   const cookieStore = await cookies();
-  cookieStore.set("session", session, {
+  cookieStore.set("session", user, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60,
     sameSite: "lax",
     path: "/",
   });
+
+  return null;
 }
 
 export async function deleteSession() {
