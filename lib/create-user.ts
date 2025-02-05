@@ -13,7 +13,7 @@ export async function createUser(
     const { data: existingUser, error: findError } = await supabase
       .from("users")
       .select("*")
-      .eq("id", userId)
+      .eq("email", email)
       .single();
 
     if (findError) {

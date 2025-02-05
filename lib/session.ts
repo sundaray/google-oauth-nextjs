@@ -2,24 +2,21 @@ import "server-only";
 
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { SignJWT, jwtVerify } from "jose";
+import { EncryptJWT, jwtDecrypt, base64url } from "jose";
 
-const secretKey = process.env.SECRET;
-const key = new TextEncoder().encode(secretKey);
+const string = process.env.JWT_ENCRYPTION_KEY ?? "";
+const secret = base64url.decode(string);
 
 export async function encrypt(payload: any) {
-  return await new SignJWT(payload)
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
+  return await new EncryptJWT(payload)
+    .setProtectedHeader({ alg: "dir", enc: "A128CBC-HS256" })
     .setExpirationTime("1hr")
-    .sign(key);
+    .encrypt(secret);
 }
 
-export async function decrypt(token: string) {
+export async function decrypt(jwt: string) {
   try {
-    const { payload } = await jwtVerify(token, key, {
-      algorithms: ["HS256"],
-    });
+    const { payload } = await jwtDecrypt(jwt, secret);
     return payload;
   } catch (error) {
     return null;
@@ -32,10 +29,10 @@ export async function createSession(
   email: string,
   picture: string,
 ) {
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
   const session = await encrypt({ userId, name, email, picture });
 
-  cookies.set("session", session, {
+  const cookieStore = await cookies();
+  cookieStore.set("session", session, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60,
@@ -44,7 +41,8 @@ export async function createSession(
   });
 }
 
-export function deleteSession() {
-  cookies.delete("session");
+export async function deleteSession() {
+  const cookieStore = await cookies();
+  cookieStore.delete("session");
   redirect("/");
 }
