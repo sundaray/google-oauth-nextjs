@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { EncryptJWT, jwtDecrypt, base64url } from "jose";
 
-const string = process.env.JWT_ENCRYPTION_KEY ?? "";
-const secret = base64url.decode(string);
+const key = process.env.JWT_ENCRYPTION_KEY ?? "";
+const secret = base64url.decode(key);
 
 export async function encrypt(payload: any) {
   return await new EncryptJWT(payload)
@@ -29,10 +29,10 @@ export async function createSession(
   email: string,
   picture: string,
 ) {
-  const user = await encrypt({ userId, name, email, picture });
+  const encryptedUser = await encrypt({ userId, name, email, picture });
 
   const cookieStore = await cookies();
-  cookieStore.set("session", user, {
+  cookieStore.set("session", encryptedUser, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60,

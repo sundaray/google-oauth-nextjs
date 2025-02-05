@@ -16,7 +16,7 @@ export async function signInWithGoogle(next: string) {
 
   const url = await google.createAuthorizationURLWithPKCE(state, codeVerifier, [
     "openid",
-    "'email",
+    "email",
     "profile",
   ]);
 
@@ -52,3 +52,8 @@ export async function signInWithGoogle(next: string) {
 /************************************************
  * Sign Out Handler
  ************************************************/
+
+export async function signOut() {
+  (await cookies()).delete("session");
+  redirect("/");
+}
