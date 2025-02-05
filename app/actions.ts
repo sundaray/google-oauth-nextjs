@@ -21,10 +21,7 @@ export async function signInWithGoogle(next: string) {
     "profile",
   ]);
 
-  // Let's add some debug logs here
-  console.log("Starting OAuth flow...");
   await storeOAuthState(state, codeVerifier, next);
-  console.log("OAuth state stored, redirecting...");
 
   redirect(url.toString());
 }
