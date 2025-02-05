@@ -1,4 +1,4 @@
-import { createClient } from "@/supabase/server";
+import { supabase } from "@/lib/supabase";
 
 const ADMIN_EMAILS = ["rawgrittt@gmail.com"];
 
@@ -8,8 +8,6 @@ export async function createUser(
   picture: string,
   role: string,
 ) {
-  const supabase = await createClient();
-
   try {
     // Step 1: Check if a user exists with the given id
     const { data: existingUser, error: findError } = await supabase
