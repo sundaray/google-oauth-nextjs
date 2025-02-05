@@ -18,7 +18,7 @@ export function SignInGoogleForm() {
   );
 
   return (
-    <form action={formAction} className="mx-auto grid max-w-[360px] gap-2">
+    <form action={formAction} className="mx-auto grid max-w-[320px] gap-2">
       <button
         type="submit"
         disabled={isPending}

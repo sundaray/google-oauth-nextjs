@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { google } from "@/lib/oauth2/auth";
 import { decodeJwt, JWTPayload } from "jose";
 import { v4 as uuidv4 } from "uuid";
-import { createSession } from "@/lib/session";
+import { createSession, decrypt } from "@/lib/session";
 import { assignUserRole } from "@/lib/assign-user-role";
 
 interface GoogleJWTClaims extends JWTPayload {
@@ -18,23 +18,38 @@ export async function GET(request: NextRequest) {
   const state = url.searchParams.get("state");
 
   const cookieStore = await cookies();
-  const storedState = cookieStore.get("google_oauth_state")?.value ?? null;
-  const codeVerifier = cookieStore.get("google_code_verifier")?.value ?? null;
-  const redirect = cookieStore.get("redirect")?.value ?? null;
+  const encryptedState = cookieStore.get("google_oauth_state")?.value ?? null;
+  const encryptedCodeVerifier =
+    cookieStore.get("google_code_verifier")?.value ?? null;
+  const encryptedRedirect = cookieStore.get("redirect")?.value ?? null;
 
   const authErrorUrl = new URL("/auth-error", url);
 
   if (
     code === null ||
     state === null ||
-    storedState === null ||
-    codeVerifier === null ||
-    redirect === null
+    encryptedState === null ||
+    encryptedCodeVerifier === null ||
+    encryptedRedirect === null
   ) {
     return NextResponse.redirect(authErrorUrl);
   }
 
+  // Decrypt our stored values
+  const storedState = await decrypt(encryptedState);
+  const codeVerifier = (await decrypt(encryptedCodeVerifier)) as string;
+  const redirect = (await decrypt(encryptedRedirect)) as string;
+
+  // Additional null check after decryption
+  if (!storedState || !codeVerifier || !redirect) {
+    console.log("storedState, codeVerifier or redirect are not present");
+    return NextResponse.redirect(authErrorUrl);
+  }
+
+  // Now compare the decrypted state with the one from Google
   if (state !== storedState) {
+    console.log("States don't match");
+
     return NextResponse.redirect(authErrorUrl);
   }
 
@@ -44,6 +59,7 @@ export async function GET(request: NextRequest) {
   );
 
   if (error) {
+    console.log("Token exchange error");
     return NextResponse.redirect(authErrorUrl);
   }
 
