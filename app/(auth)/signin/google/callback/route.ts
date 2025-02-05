@@ -4,6 +4,7 @@ import { google } from "@/lib/oauth2/auth";
 import { decodeJwt, JWTPayload } from "jose";
 import { v4 as uuidv4 } from "uuid";
 import { createSession } from "@/lib/session";
+import { assignUserRole } from "@/lib/assign-user-role";
 
 interface GoogleJWTClaims extends JWTPayload {
   name: string;
@@ -53,7 +54,9 @@ export async function GET(request: NextRequest) {
   const email = claims.email;
   const picture = claims.picture;
 
-  await createSession(userId, name, email, picture);
+  const role = assignUserRole(email);
+
+  await createSession(userId, name, email, role, picture);
 
   return NextResponse.redirect(new URL(redirect, url));
 }

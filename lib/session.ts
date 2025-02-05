@@ -23,13 +23,34 @@ export async function decrypt(jwt: string) {
   }
 }
 
+export async function storeOAuthState(
+  state: string,
+  codeVerifier: string,
+  redirect: string,
+) {
+  const cookieStore = await cookies();
+
+  const cookieOptions = {
+    path: "/",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 10,
+    sameSite: "lax",
+  } as const;
+
+  cookieStore.set("google_oauth_state", state, cookieOptions);
+  cookieStore.set("google_code_verifier", codeVerifier, cookieOptions);
+  cookieStore.set("redirect", redirect, cookieOptions);
+}
+
 export async function createSession(
   userId: string,
   name: string,
   email: string,
+  role: string,
   picture: string,
 ) {
-  const encryptedUser = await encrypt({ userId, name, email, picture });
+  const encryptedUser = await encrypt({ userId, name, email, role, picture });
 
   const cookieStore = await cookies();
   cookieStore.set("session", encryptedUser, {
@@ -39,8 +60,6 @@ export async function createSession(
     sameSite: "lax",
     path: "/",
   });
-
-  return null;
 }
 
 export async function deleteSession() {
