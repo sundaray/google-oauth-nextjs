@@ -86,6 +86,35 @@ export async function createSession(
 }
 
 /************************************************
+ * Update session
+ ************************************************/
+
+export async function updateSession(sessionToken: string) {
+  if (!sessionToken) return;
+
+  try {
+    const payload = await decrypt(sessionToken);
+
+    if (!payload) return;
+
+    const updatedToken = await encrypt(payload);
+
+    return {
+      token: updatedToken,
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60, // 1 hour in seconds
+        sameSite: "lax" as const,
+        path: "/",
+      },
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
+/************************************************
  * Delete session
  ************************************************/
 

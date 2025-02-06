@@ -11,12 +11,4 @@ export function encodeBasicCredentials(clientId: string, clientSecret: string) {
   return base64url.encode(bytes);
 }
 
-export async function signJWT(payload: any, secret: string): Promise<string> {
-  const jwt = await new SignJWT(payload)
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("1hr")
-    .sign(new TextEncoder().encode(secret));
 
-  return jwt;
-}

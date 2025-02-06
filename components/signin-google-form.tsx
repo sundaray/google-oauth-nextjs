@@ -19,6 +19,11 @@ export function SignInGoogleForm() {
 
   return (
     <form action={formAction} className="mx-auto grid max-w-[320px] gap-2">
+      {formState !== undefined && formState.error && (
+        <div className="text-pretty py-4 text-sm text-red-600">
+          {formState.error}
+        </div>
+      )}
       <button
         type="submit"
         disabled={isPending}
