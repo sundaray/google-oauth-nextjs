@@ -32,9 +32,11 @@ export default function ClientPage() {
       <h1 className="text-xl font-bold">
         {user ? "User Authenticated" : "User Not Authenticated"}
       </h1>
-      <p className="mt-2 text-sm">Email: {user ? user.email : "N/A"}</p>
-      <p className="mt-4 font-medium text-muted-foreground">
-        This is a Client Component
+      <p className="mt-2 text-sm">
+        Email: {user ? user.email : "Not available"}
+      </p>
+      <p className="mt-4 text-sm font-medium text-muted-foreground">
+        (This is a Client Component)
       </p>
     </div>
   );
