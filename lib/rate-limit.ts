@@ -1,3 +1,5 @@
+import "server-only";
+
 const rateLimitStore = new Map<
   string,
   { count: number; lastRequest: number }
@@ -13,7 +15,7 @@ const WINDOW_IN_SECONDS = 60; // Within a 60-second window
  *
  ************************************************/
 
-export async function checkAuthRateLimit(
+export async function authRateLimit(
   ip: string,
 ): Promise<{ limited: boolean; retryAfter?: number; message?: string }> {
   const key = `auth:${ip}`;

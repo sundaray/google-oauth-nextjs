@@ -6,18 +6,18 @@ import { google } from "@/lib/oauth2/auth";
 import { generateState } from "@/lib/oauth2/utils";
 import { generateCodeVerifier } from "@/lib/oauth2/pkce";
 import { storeOAuthState } from "@/lib/session";
-import { checkAuthRateLimit } from "@/lib/rate-limit";
+import { authRateLimit } from "@/lib/rate-limit";
 
 /************************************************
  * Sign in with Google
- ************************************************/
+ **************** ********************************/
 
 export async function signInWithGoogle(next: string) {
   const headersList = await headers();
-  const ip = (await headersList).get("x-forwarded-for") ?? "127.0.0.1";
+  const clientIP = (await headersList).get("x-forwarded-for") ?? "127.0.0.1";
 
   // check rate limit
-  const rateLimitResult = await checkAuthRateLimit(ip);
+  const rateLimitResult = await authRateLimit(clientIP);
 
   if (rateLimitResult.limited) {
     return {

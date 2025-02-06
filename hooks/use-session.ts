@@ -19,7 +19,7 @@ export function useSession() {
   useEffect(() => {
     async function fetchSession() {
       try {
-        const response = await fetch("/session");
+        const response = await fetch("/api/auth/session");
 
         if (!response.ok) {
           throw new Error("Failed to fetch session");

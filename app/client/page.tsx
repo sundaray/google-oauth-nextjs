@@ -29,12 +29,12 @@ export default function ClientPage() {
   }
   return (
     <div className="px-4 text-center">
-      <h1 className="text-lg font-bold">
+      <h1 className="text-xl font-bold">
         {user ? "User Authenticated" : "User Not Authenticated"}
       </h1>
       <p className="mt-2 text-sm">Email: {user ? user.email : "N/A"}</p>
       <p className="mt-4 font-medium text-muted-foreground">
-        This is a Client Component.
+        This is a Client Component
       </p>
     </div>
   );

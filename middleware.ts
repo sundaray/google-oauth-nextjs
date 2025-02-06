@@ -1,17 +1,19 @@
-// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { updateSession } from "./lib/session";
 import { getCurrentSession } from "@/lib/get-current-session";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
+  const authRoutes = ["/signin"];
+  const privateRoutes = ["/admin"];
+
   const { nextUrl } = request;
   const path = nextUrl.pathname;
 
   const { user } = await getCurrentSession();
 
-  // Only redirect to signin if the user is not authenticated AND not already on the sign-in page
-  if (!user && !path.includes("/signin")) {
+  // Redirect unauthenticated users attempting to access private pages to the sign-in page
+  if (!user && privateRoutes.includes(path)) {
     const signInUrl = new URL("/signin", nextUrl);
     signInUrl.searchParams.set("next", path);
     return NextResponse.redirect(signInUrl);

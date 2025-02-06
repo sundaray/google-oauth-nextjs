@@ -5,6 +5,7 @@ import { decodeJwt, JWTPayload } from "jose";
 import { v4 as uuidv4 } from "uuid";
 import { createSession, decrypt } from "@/lib/session";
 import { assignUserRole } from "@/lib/assign-user-role";
+import { authRateLimit } from "@/lib/rate-limit";
 
 interface GoogleJWTClaims extends JWTPayload {
   name: string;
@@ -14,6 +15,14 @@ interface GoogleJWTClaims extends JWTPayload {
 
 export async function GET(request: NextRequest) {
   const url = request.nextUrl;
+
+  const clientIP = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
+  const rateLimitResult = await authRateLimit(clientIP);
+
+  if (rateLimitResult.limited) {
+    return NextResponse.redirect(new URL("/rate-limit-error", url));
+  }
+
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
 
@@ -59,7 +68,6 @@ export async function GET(request: NextRequest) {
   );
 
   if (error) {
-    console.log("Token exchange error");
     return NextResponse.redirect(authErrorUrl);
   }
 
