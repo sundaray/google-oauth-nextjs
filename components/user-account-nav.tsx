@@ -37,10 +37,10 @@ export async function UserAccountNav() {
       <DropdownMenuTrigger>
         <Avatar>
           <AvatarImage src={user?.picture || undefined} />
-          <AvatarFallback>
+          <AvatarFallback className="bg-input">
             {user?.email.slice(0, 2).toUpperCase()}
           </AvatarFallback>
-        </Avatar>
+        </Avatar> 
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem className="cursor-pointer">

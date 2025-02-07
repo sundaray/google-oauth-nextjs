@@ -4,7 +4,6 @@ import { updateSession } from "./lib/session";
 import { getCurrentSession } from "@/lib/get-current-session";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
-  const authRoutes = ["/signin"];
   const privateRoutes = ["/admin"];
 
   const { nextUrl } = request;

@@ -4,8 +4,8 @@ export async function createUser(
   id: string,
   name: string,
   email: string,
-  picture: string,
   role: string,
+  picture: string,
 ) {
   try {
     const { data, error } = await supabase
@@ -24,16 +24,16 @@ export async function createUser(
         },
       )
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.log("Create user error: ", error);
-      return { data: null, error };
+      throw error;
     }
 
-    return { data, error: null };
+    return { data };
   } catch (error) {
     console.log("Create user error: ", error);
-    return { data: null, error };
+    throw error;
   }
 }
