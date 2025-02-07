@@ -15,7 +15,7 @@ type MainNavProps = {
 export function MainNav({ items }: MainNavProps) {
   return (
     <div className="flex h-14 items-center justify-between border-b bg-accent px-4">
-      <nav className="hidden md:block">
+      <nav>
         <ul className="flex space-x-6">
           {items.map((item) => (
             <li key={item.title}>

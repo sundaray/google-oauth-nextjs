@@ -17,7 +17,7 @@ export function NavItem({ href, title }: NavItemProps) {
   return (
     <Link
       className={cn(
-        "relative text-sm font-medium text-muted-foreground transition-colors hover:text-primary",
+        "relative py-12 text-sm font-medium text-muted-foreground transition-colors hover:text-primary",
         isActive && "text-primary",
       )}
       href={href}

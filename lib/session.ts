@@ -8,7 +8,9 @@ const key = process.env.JWT_ENCRYPTION_KEY ?? "";
 const secret = base64url.decode(key);
 
 /************************************************
+ *
  * Encrypt payload
+ *
  ************************************************/
 
 export async function encrypt(payload: any) {
@@ -22,7 +24,9 @@ export async function encrypt(payload: any) {
 }
 
 /************************************************
+ *
  * Decrypt payload
+ *
  ************************************************/
 
 export async function decrypt(jwe: string) {
@@ -35,7 +39,9 @@ export async function decrypt(jwe: string) {
 }
 
 /************************************************
+ *
  * Store OAuth state in cookies
+ *
  ************************************************/
 
 export async function storeOAuthState(
@@ -49,7 +55,7 @@ export async function storeOAuthState(
     path: "/",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 10,
+    maxAge: 60 * 10, // 10 minutes in seconds
     sameSite: "lax",
   } as const;
 
@@ -63,7 +69,9 @@ export async function storeOAuthState(
 }
 
 /************************************************
+ *
  * Create session
+ *
  ************************************************/
 
 export async function createSession(
@@ -79,14 +87,16 @@ export async function createSession(
   cookieStore.set("session", encryptedUser, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60,
+    maxAge: 60 * 60, // 1 hour in seconds
     sameSite: "lax",
     path: "/",
   });
 }
 
 /************************************************
+ *
  * Update session
+ *
  ************************************************/
 
 export async function updateSession(sessionToken: string) {
@@ -115,7 +125,9 @@ export async function updateSession(sessionToken: string) {
 }
 
 /************************************************
+ *
  * Delete session
+ *
  ************************************************/
 
 export async function deleteSession() {

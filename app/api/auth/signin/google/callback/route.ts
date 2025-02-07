@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { createSession, decrypt } from "@/lib/session";
 import { assignUserRole } from "@/lib/assign-user-role";
 import { authRateLimit } from "@/lib/rate-limit";
+import { createUser } from "@/lib/create-user";
 
 interface GoogleJWTClaims extends JWTPayload {
   name: string;
@@ -51,14 +52,11 @@ export async function GET(request: NextRequest) {
 
   // Additional null check after decryption
   if (!storedState || !codeVerifier || !redirect) {
-    console.log("storedState, codeVerifier or redirect are not present");
     return NextResponse.redirect(authErrorUrl);
   }
 
   // Now compare the decrypted state with the one from Google
   if (state !== storedState) {
-    console.log("States don't match");
-
     return NextResponse.redirect(authErrorUrl);
   }
 
@@ -73,14 +71,15 @@ export async function GET(request: NextRequest) {
 
   const claims = decodeJwt(data.id_token) as GoogleJWTClaims;
 
-  const userId = uuidv4();
+  const id = uuidv4();
   const name = claims.name;
   const email = claims.email;
   const picture = claims.picture;
 
   const role = assignUserRole(email);
 
-  await createSession(userId, name, email, role, picture);
+  await createUser(id, name, email, role, picture);
+  await createSession(id, name, email, role, picture);
 
   return NextResponse.redirect(new URL(redirect, url));
 }
